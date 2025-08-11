@@ -205,3 +205,19 @@ cython_debug/
 marimo/_static/
 marimo/_lsp/
 __marimo__/
+
+# Project-specific artefacts
+.env
+data/json/
+data/csv/
+data/fig/
+versions_*.log
+
+# Terraform
+.terraform/
+terraform.tfstate*
+crash.log
+
+# Python extras
+__pycache__/
+*.pyc
