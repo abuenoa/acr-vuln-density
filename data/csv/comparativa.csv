@@ -1,0 +1,5 @@
+image,tag,repo,short_image,cv_critical_T0,cv_critical_T1,cv_high_T0,cv_high_T1,density_T0,density_T1,size_mb_T0,size_mb_T1,delta_cv_critical_T1_vs_T0,delta_cv_high_T1_vs_T0,delta_density_T1_vs_T0
+tfmacri0arfb31507.azurecr.io,v1,tfmacri0arfb31507.azurecr.io,alpine,0,0,0,0,0.0,0.0,3.26,3.26,0,0,0.0
+tfmacri0arfb31507.azurecr.io,v1,tfmacri0arfb31507.azurecr.io,busybox,0,0,0,0,0.0,0.0,2.05,2.05,0,0,0.0
+tfmacri0arfb31507.azurecr.io,v1,tfmacri0arfb31507.azurecr.io,debian-slim,0,1,5,7,0.1857355126300148,0.2972,26.92,26.92,1,2,0.11146448736998521
+tfmacri0arfb31507.azurecr.io,v1,tfmacri0arfb31507.azurecr.io,ubuntu,0,0,0,0,0.0,0.0,28.17,28.17,0,0,0.0

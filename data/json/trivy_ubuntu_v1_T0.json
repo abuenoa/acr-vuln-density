@@ -1,0 +1,91 @@
+{
+  "SchemaVersion": 2,
+  "CreatedAt": "2025-08-19T13:10:00.992624+02:00",
+  "ArtifactName": "tfmacri0arfb31507.azurecr.io/ubuntu:v1",
+  "ArtifactType": "container_image",
+  "Metadata": {
+    "Size": 80416256,
+    "OS": {
+      "Family": "ubuntu",
+      "Name": "22.04"
+    },
+    "ImageID": "sha256:da5fdf346e5313bef2a3dd2476c0251d48103213a5e3a0cb3afbb8909f3cf50f",
+    "DiffIDs": [
+      "sha256:3cc982388b71ef357e0157e0b7d3059dcefa4dc9fd2e3815bde6c6ce040302f3"
+    ],
+    "RepoTags": [
+      "tfmacri0arfb31507.azurecr.io/ubuntu:v1"
+    ],
+    "RepoDigests": [
+      "tfmacri0arfb31507.azurecr.io/ubuntu@sha256:da5fdf346e5313bef2a3dd2476c0251d48103213a5e3a0cb3afbb8909f3cf50f"
+    ],
+    "ImageConfig": {
+      "architecture": "amd64",
+      "created": "2025-07-14T16:33:32.00234559Z",
+      "history": [
+        {
+          "created": "2025-07-14T16:33:29Z",
+          "created_by": "/bin/sh -c #(nop)  ARG RELEASE",
+          "empty_layer": true
+        },
+        {
+          "created": "2025-07-14T16:33:29Z",
+          "created_by": "/bin/sh -c #(nop)  ARG LAUNCHPAD_BUILD_ARCH",
+          "empty_layer": true
+        },
+        {
+          "created": "2025-07-14T16:33:29Z",
+          "created_by": "/bin/sh -c #(nop)  LABEL org.opencontainers.image.ref.name=ubuntu",
+          "empty_layer": true
+        },
+        {
+          "created": "2025-07-14T16:33:29Z",
+          "created_by": "/bin/sh -c #(nop)  LABEL org.opencontainers.image.version=22.04",
+          "empty_layer": true
+        },
+        {
+          "created": "2025-07-14T16:33:31Z",
+          "created_by": "/bin/sh -c #(nop) ADD file:415bbc01dfb447d002e2d8173e113ef025d2bbfa20f1205823fa699dc87a2019 in / "
+        },
+        {
+          "created": "2025-07-14T16:33:32Z",
+          "created_by": "/bin/sh -c #(nop)  CMD [\"/bin/bash\"]",
+          "empty_layer": true
+        }
+      ],
+      "os": "linux",
+      "rootfs": {
+        "type": "layers",
+        "diff_ids": [
+          "sha256:3cc982388b71ef357e0157e0b7d3059dcefa4dc9fd2e3815bde6c6ce040302f3"
+        ]
+      },
+      "config": {
+        "Cmd": [
+          "/bin/bash"
+        ],
+        "Env": [
+          "PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin"
+        ],
+        "Labels": {
+          "org.opencontainers.image.ref.name": "ubuntu",
+          "org.opencontainers.image.version": "22.04"
+        }
+      }
+    },
+    "Layers": [
+      {
+        "Size": 80416256,
+        "Digest": "sha256:1d387567261efec2a352c45b8d512a8db5c246122fb9f246ae9190252a0c3adb",
+        "DiffID": "sha256:3cc982388b71ef357e0157e0b7d3059dcefa4dc9fd2e3815bde6c6ce040302f3"
+      }
+    ]
+  },
+  "Results": [
+    {
+      "Target": "tfmacri0arfb31507.azurecr.io/ubuntu:v1 (ubuntu 22.04)",
+      "Class": "os-pkgs",
+      "Type": "ubuntu"
+    }
+  ]
+}

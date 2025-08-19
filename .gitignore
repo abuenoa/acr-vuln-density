@@ -208,9 +208,6 @@ __marimo__/
 
 # Project-specific artefacts
 .env
-data/json/
-data/csv/
-data/fig/
 versions_*.log
 
 # Terraform

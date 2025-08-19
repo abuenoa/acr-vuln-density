@@ -1,54 +1,60 @@
 #!/usr/bin/env bash
-# Usage: 30_scan_images.sh T0|T1|T2|T3
 set -euo pipefail
-TP="${1:?Timepoint (T0|T1|T2|T3) required}"
 
-source "$(dirname "$0")/../.env"
-mkdir -p "$(dirname "$0")/../data/json" "$(dirname "$0")/../data/csv"
+# Main script: scans base images stored in ACR and saves Trivy results
+# Usage: bash scripts/30_scan_images.sh T0|T1|T2|T3
 
-CSV="data/csv/resultados_${TP,,}.csv"
-JSON_DIR="data/json"
-DATE_UTC="$(date -u +'%Y-%m-%dT%H:%M:%SZ')"
+TIMEPOINT="${1:?Usage: $0 <T0|T1|T2|T3>}"
 
-# fixed image set (as per proposal)
-IMAGES=(
-  "${LOGIN_SERVER}/alpine:v1 alpine v1"
-  "${LOGIN_SERVER}/debian-slim:v1 debian-slim v1"
-  "${LOGIN_SERVER}/ubuntu:v1 ubuntu v1"
-  "${LOGIN_SERVER}/busybox:v1 busybox v1"
-)
+source .env
 
-# header if missing
-if [ ! -f "$CSV" ]; then
-  echo "timepoint,image,tag,repo,image_ref,size_mb,cv_critical,cv_high,density,trivy_db_updated_at,trivy_version,scan_utc" > "$CSV"
-fi
+OUT_JSON_DIR="data/json"
+OUT_CSV="data/csv/resultados_${TIMEPOINT}.csv"
+mkdir -p "$OUT_JSON_DIR" data/csv
 
-# record Trivy meta once (will also be parsed per row)
-TRIVY_META="$(trivy -v | sed 's/[[:space:]]\{1,\}/ /g')"
-TRIVY_VERSION="$(echo "$TRIVY_META" | awk '/Version:/ {print $2}')"
-DB_UPDATED="$(echo "$TRIVY_META" | awk -F': ' '/Vulnerability DB:/ {print $2}')"
+echo "timepoint,image,tag,repo,image_ref,size_mb,cv_critical,cv_high,density,trivy_db_updated_at,trivy_version,scan_utc" > "$OUT_CSV"
 
-for entry in "${IMAGES[@]}"; do
-  read -r IMAGE REPO TAG <<<"$entry"
-  echo "== Pulling $IMAGE"
-  docker pull "$IMAGE" >/dev/null
+IMAGES=("alpine:v1" "debian-slim:v1" "ubuntu:v1" "busybox:v1")
 
-  SIZE_BYTES="$(docker image inspect "$IMAGE" --format='{{ .Size }}')"
-  SIZE_MB="$(awk -v s="$SIZE_BYTES" 'BEGIN { printf "%.2f", s/1048576 }')"
+for IMG in "${IMAGES[@]}"; do
+  REPO="${LOGIN_SERVER}"
+  TAG="${IMG##*:}"
+  IMAGE_REF="${LOGIN_SERVER}/${IMG}"
 
-  OUT_JSON="${JSON_DIR}/trivy_${REPO}_${TAG}_${TP}.json"
-  echo "== Trivy scan $IMAGE -> $OUT_JSON"
-  trivy image --quiet --severity CRITICAL,HIGH --format json "$IMAGE" > "$OUT_JSON"
+  echo "== Pulling ${IMAGE_REF} =="
+  if ! docker pull "${IMAGE_REF}"; then
+    echo "ERROR: Failed to pull ${IMAGE_REF}" >&2
+    continue
+  fi
 
-  # jq with null-safety across Results[].Vulnerabilities
-  CRIT=$(jq '[.Results[]? | (.Vulnerabilities // [])[] | select(.Severity=="CRITICAL")] | length' "$OUT_JSON")
-  HIGH=$(jq '[.Results[]? | (.Vulnerabilities // [])[] | select(.Severity=="HIGH")]     | length' "$OUT_JSON")
+  SIZE_BYTES=$(docker image inspect "${IMAGE_REF}" --format='{{.Size}}' || echo 0)
+  SIZE_MB=$(echo "$SIZE_BYTES" | awk '{printf "%.2f", $1 / 1024 / 1024}')
 
-  # density per MB (avoid div-by-zero)
-  DENSITY="$(awk -v c="$CRIT" -v h="$HIGH" -v mb="$SIZE_MB" 'BEGIN{ if(mb>0){ printf "%.6f", (c+h)/mb } else { print "NA" } }')"
+  TRIVY_JSON="${OUT_JSON_DIR}/trivy_${REPO}_${TAG}_${TIMEPOINT}.json"
+  echo "== Scanning ${IMAGE_REF} =="
+  if ! trivy image --quiet --severity CRITICAL,HIGH --format json -o "$TRIVY_JSON" "$IMAGE_REF"; then
+    echo "ERROR: Trivy failed for ${IMAGE_REF}" >&2
+    continue
+  fi
 
-  echo "${TP},${REPO},${TAG},${REPO},${IMAGE},${SIZE_MB},${CRIT},${HIGH},${DENSITY},${DB_UPDATED},${TRIVY_VERSION},${DATE_UTC}" \
-    >> "$CSV"
+  if [ ! -s "$TRIVY_JSON" ]; then
+    echo "ERROR: Empty JSON for ${IMAGE_REF}, skipping." >&2
+    continue
+  fi
+
+  # Safe parsing with jq: handle nulls or missing keys gracefully
+  CV_CRITICAL=$(jq '[.Results[]? | select(.Vulnerabilities) | .Vulnerabilities[]? | select(.Severity=="CRITICAL")] | length' "$TRIVY_JSON" || echo 0)
+  CV_HIGH=$(jq '[.Results[]? | select(.Vulnerabilities) | .Vulnerabilities[]? | select(.Severity=="HIGH")] | length' "$TRIVY_JSON" || echo 0)
+
+  DENSITY=$(echo "$CV_CRITICAL $CV_HIGH $SIZE_MB" | awk '{total=$1+$2; if ($3==0) print 0; else printf "%.4f", total/$3}')
+
+  # Extract Trivy version and DB updatedAt correctly
+  TRIVY_VERSION=$(trivy --version | awk -F': ' '/Version:/ && !found {print $2; found=1}')
+  TRIVY_DB_UPDATED=$(trivy --version | awk -F': ' '/UpdatedAt:/ {print $2}')
+
+  SCAN_TIME_UTC=$(date -u +"%Y-%m-%dT%H:%M:%SZ")
+
+  echo "${TIMEPOINT},${REPO},${TAG},${LOGIN_SERVER},${IMAGE_REF},${SIZE_MB},${CV_CRITICAL},${CV_HIGH},${DENSITY},${TRIVY_DB_UPDATED},${TRIVY_VERSION},${SCAN_TIME_UTC}" >> "$OUT_CSV"
 done
 
-echo "Saved -> $CSV"
+echo "✅ Scan completed for ${TIMEPOINT}. Results saved to ${OUT_CSV}"

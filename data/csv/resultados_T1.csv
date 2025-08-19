@@ -1,0 +1,5 @@
+timepoint,image,tag,repo,image_ref,size_mb,cv_critical,cv_high,density,trivy_db_updated_at,trivy_version,scan_utc
+T1,tfmacri0arfb31507.azurecr.io,v1,tfmacri0arfb31507.azurecr.io,tfmacri0arfb31507.azurecr.io/alpine:v1,3.26,0,0,0.0000,2025-08-19 06:29:14.336660543 +0000 UTC,0.65.0,2025-08-19T11:20:18Z
+T1,tfmacri0arfb31507.azurecr.io,v1,tfmacri0arfb31507.azurecr.io,tfmacri0arfb31507.azurecr.io/debian-slim:v1,26.92,1,7,0.2972,2025-08-19 06:29:14.336660543 +0000 UTC,0.65.0,2025-08-19T11:20:19Z
+T1,tfmacri0arfb31507.azurecr.io,v1,tfmacri0arfb31507.azurecr.io,tfmacri0arfb31507.azurecr.io/ubuntu:v1,28.17,0,0,0.0000,2025-08-19 06:29:14.336660543 +0000 UTC,0.65.0,2025-08-19T11:20:21Z
+T1,tfmacri0arfb31507.azurecr.io,v1,tfmacri0arfb31507.azurecr.io,tfmacri0arfb31507.azurecr.io/busybox:v1,2.05,0,0,0.0000,2025-08-19 06:29:14.336660543 +0000 UTC,0.65.0,2025-08-19T11:20:22Z

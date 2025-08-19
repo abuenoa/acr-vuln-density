@@ -1,0 +1,13 @@
+{
+  "script": "analysis/merge_and_plot.py",
+  "generated_utc": "2025-08-19T11:27:50.588406+00:00",
+  "inputs_present": [
+    "t0",
+    "t1"
+  ],
+  "outputs": {
+    "merged_all_csv": "C:\\Users\\anton\\Desktop\\tfm-project\\acr-vuln-density\\data\\csv\\merged_all.csv",
+    "comparativa_csv": "C:\\Users\\anton\\Desktop\\tfm-project\\acr-vuln-density\\data\\csv\\comparativa.csv",
+    "fig_dir": "C:\\Users\\anton\\Desktop\\tfm-project\\acr-vuln-density\\data\\fig"
+  }
+}
